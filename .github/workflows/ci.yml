@@ -1,0 +1,101 @@
+# SPDX-FileCopyrightText: 2025-2026 Igal Alkon
+# SPDX-FileCopyrightText: 2026 ALKONTEK <git@alkontek.com>
+# SPDX-License-Identifier: BSD-3-Clause
+
+name: Vecmat Vendors CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  arm-fp16:
+    name: arm-fp16-${{ matrix.cpu }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cpu: cortex-a53
+          - cpu: cortex-a76
+    steps:
+      - name: Checkout vendors
+        uses: actions/checkout@v5
+
+      - name: Checkout vecmat
+        uses: actions/checkout@v5
+        with:
+          repository: alkontek/vecmat
+#          ref: v0.3.x
+#          ref: v0.3.7
+          ref: master
+          path: vecmat
+
+      - name: Install cross toolchain and qemu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build cmake \
+            gcc-aarch64-linux-gnu libc6-dev-arm64-cross qemu-user
+
+      - name: Configure and build
+        working-directory: vecmat
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_SYSTEM_NAME=Linux \
+            -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+            -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
+            -DVECMAT_ENABLE_FP16=ON \
+            -DVECMAT_MODULES=arm/fp16 \
+            -DVECMAT_MODULES_PATH=${{ github.workspace }} \
+            -DVECMAT_BUILD_TESTS=ON \
+            -DVECMAT_INSTALL=OFF \
+            -DVECMAT_RUNTIME_DISPATCH=ON
+          cmake --build build --parallel --target vecmat_tests
+
+      - name: Run under qemu
+        working-directory: vecmat
+        run: |
+          qemu-aarch64 -cpu ${{ matrix.cpu }} -L /usr/aarch64-linux-gnu \
+            ./build/test/vecmat_tests
+
+  intel-fp16:
+    name: intel-fp16
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout vendors
+        uses: actions/checkout@v5
+
+      - name: Checkout vecmat
+        uses: actions/checkout@v5
+        with:
+          repository: alkontek/vecmat
+#          ref: v0.3.x
+#          ref: v0.3.7
+          ref: master
+          path: vecmat
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build cmake
+
+      - name: Configure and build
+        working-directory: vecmat
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DVECMAT_ENABLE_FP16=ON \
+            -DVECMAT_MODULES=intel/fp16 \
+            -DVECMAT_MODULES_PATH=${{ github.workspace }} \
+            -DVECMAT_BUILD_TESTS=ON \
+            -DVECMAT_INSTALL=OFF
+          cmake --build build --parallel --target vecmat_tests
+
+      - name: Run tests
+        working-directory: vecmat
+        run: ./build/test/vecmat_tests
