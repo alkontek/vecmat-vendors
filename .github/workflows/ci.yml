@@ -164,3 +164,51 @@ jobs:
       - name: Run tests
         working-directory: vecmat
         run: ./build/test/vecmat_tests
+
+  arm-bf16:
+    name: arm-bf16-${{ matrix.cpu }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cpu: cortex-a76
+          - cpu: max
+    steps:
+      - name: Checkout vendors
+        uses: actions/checkout@v5
+
+      - name: Checkout vecmat
+        uses: actions/checkout@v5
+        with:
+          repository: alkontek/vecmat
+          ref: master
+          path: vecmat
+
+      - name: Install cross toolchain and qemu
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build cmake \
+            gcc-aarch64-linux-gnu libc6-dev-arm64-cross qemu-user
+
+      - name: Configure and build
+        working-directory: vecmat
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_SYSTEM_NAME=Linux \
+            -DCMAKE_SYSTEM_PROCESSOR=aarch64 \
+            -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc \
+            -DVECMAT_ENABLE_BF16=ON \
+            -DVECMAT_MODULES=arm/bf16 \
+            -DVECMAT_MODULES_PATH=${{ github.workspace }} \
+            -DVECMAT_BUILD_TESTS=ON \
+            -DVECMAT_INSTALL=OFF \
+            -DVECMAT_RUNTIME_DISPATCH=ON
+          cmake --build build --parallel --target vecmat_tests
+
+      - name: Run under qemu
+        working-directory: vecmat
+        run: |
+          qemu-aarch64 -cpu ${{ matrix.cpu }} -L /usr/aarch64-linux-gnu \
+            ./build/test/vecmat_tests
