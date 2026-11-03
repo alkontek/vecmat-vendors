@@ -99,3 +99,37 @@ jobs:
       - name: Run tests
         working-directory: vecmat
         run: ./build/test/vecmat_tests
+
+  spectral-graph:
+    name: spectral-graph
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout vendors
+        uses: actions/checkout@v5
+
+      - name: Checkout vecmat
+        uses: actions/checkout@v5
+        with:
+          repository: alkontek/vecmat
+          ref: master
+          path: vecmat
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build cmake
+
+      - name: Configure and build
+        working-directory: vecmat
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DVECMAT_MODULES=alkontek/spectral-graph \
+            -DVECMAT_MODULES_PATH=${{ github.workspace }} \
+            -DVECMAT_BUILD_TESTS=ON \
+            -DVECMAT_INSTALL=OFF
+          cmake --build build --parallel --target vecmat_tests
+
+      - name: Run tests
+        working-directory: vecmat
+        run: ./build/test/vecmat_tests
