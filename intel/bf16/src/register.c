@@ -2,16 +2,14 @@
 // SPDX-FileCopyrightText: 2026 ALKONTEK <git@alkontek.com>
 // SPDX-License-Identifier: BSD-3-Clause
 
-#include <stdbool.h>
-
 #include "vecmat/bf16.h"
+#include "vecmat/cpu.h"
 #include "vecmat_intel_bf16.h"
 
-bool vm_intel_bf16_supported(void);
 void vm_intel_bf16_set(void);
 
 void vm_intel_bf16_register(void)
 {
-    if (vm_intel_bf16_supported())
+    if (vm_cpu_has(VM_CPU_AVX512BF16))
         vm_intel_bf16_set();
 }

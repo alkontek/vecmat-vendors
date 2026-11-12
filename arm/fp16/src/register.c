@@ -3,14 +3,15 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 #include "arm_fp16.h"
+#include "vecmat/cpu.h"
 #include "vecmat_arm_fp16.h"
 
 int vm_arm_fp16_register(void)
 {
-    const unsigned features = vm_arm_fp16_features();
-    if ((features & VM_ARM_FP16_HP) == 0)
+    if (!vm_cpu_has(VM_CPU_ARM_FP16))
         return 0;
-    if (features & VM_ARM_FP16_FHM) {
+    /* FHM is finer than the core bit; still probed here. */
+    if (vm_arm_fp16_features() & VM_ARM_FP16_FHM) {
         vm_fp16_set_gemm(vm_arm_fp16_gemm_fmlal, "fp16=neon");
         return 1;
     }
