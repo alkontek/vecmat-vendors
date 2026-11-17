@@ -112,6 +112,7 @@ VEC_API int vm_bitset_popcount(const vm_bitset *bs);
  * @param n Number of vertices.
  * @return false if a pointer is NULL or allocation fails.
  */
+#define vm_laplacian_from_bits VECMAT_SYMBOL(vm_laplacian_from_bits)
 VEC_API bool vm_laplacian_from_bits(vm_mat *L, const vm_bitset *adj, int n);
 
 /**

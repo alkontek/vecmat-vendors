@@ -6,6 +6,8 @@
 #include <string.h>
 #include <vecmat/feature/spectral_graph.h>
 
+#ifndef VECMAT_ABI_REPLICA
+
 static int words_for(const int nbits)
 {
     return (nbits + 63) / 64;
@@ -121,3 +123,5 @@ int vm_bitset_popcount(const vm_bitset *bs)
 
     return count;
 }
+
+#endif /* VECMAT_ABI_REPLICA */

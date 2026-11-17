@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <vecmat/feature/spectral_graph.h>
 
+#ifndef VECMAT_ABI_REPLICA
+
 static uint64_t binom(const int n, const int k)
 {
     if (k < 0 || k > n) {
@@ -48,3 +50,5 @@ bool vm_comb_unrank_batch(const int n, const int k, const int batch,
 
     return true;
 }
+
+#endif /* VECMAT_ABI_REPLICA */
