@@ -49,4 +49,7 @@ cmake -S . -B build \
 - `arm/fp16` — Arm fp16 GEMM override (width)
 - `intel/fp16` — Intel fp16 GEMM override (width)
 - `arm/cortex-a5x` — Cortex-A53 / A55 schedule (backend; internal)  
-  fully tested on [NXP FRDM-IMX95](https://www.nxp.com/design/design-center/development-boards-and-designs/FRDM-IMX95) development board.
+  fully tested on [NXP FRDM-IMX95](https://www.nxp.com/design/design-center/development-boards-and-designs/FRDM-IMX95)
+  development board.
+- `alkontek/md` — cutoff neighbor lists, caller-supplied pair exclusions, shifted-force Lennard-Jones and Coulomb pairs,
+  and the kinetic energy of a particle span (feature).
