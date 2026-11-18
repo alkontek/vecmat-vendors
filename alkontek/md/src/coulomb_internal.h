@@ -17,13 +17,8 @@
 #pragma GCC optimize("fp-contract=off")
 #endif
 
-#if VECMAT_MD_ABI_SUFFIX == 64
-#  define vm_md_coulomb_tile_avx2 vm_md_coulomb_tile64_avx2
-#  define vm_md_coulomb_tile_neon vm_md_coulomb_tile64_neon
-#else
-#  define vm_md_coulomb_tile_avx2 vm_md_coulomb_tile32_avx2
-#  define vm_md_coulomb_tile_neon vm_md_coulomb_tile32_neon
-#endif
+#define vm_md_coulomb_tile_avx2 VECMAT_SYMBOL(vm_md_coulomb_tile_avx2)
+#define vm_md_coulomb_tile_neon VECMAT_SYMBOL(vm_md_coulomb_tile_neon)
 
 /**
  * @brief Cutoff constants shared by the scalar tile and the SIMD paths.

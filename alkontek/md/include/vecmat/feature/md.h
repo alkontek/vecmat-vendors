@@ -15,43 +15,21 @@
  * `vm_sum_compensated`, `vm_cpu_has`).
  *
  * The library builds each entry point once per float ABI. The unsuffixed
- * names below are the ones callers write; the header maps them to the
+ * names below are the ones callers write; `VECMAT_SYMBOL` maps them to the
  * `32` or `64` suffix.
  */
 
 #include <vecmat.h>
 
-#if defined(VECMAT_ABI_BITS) && (VECMAT_ABI_BITS == 64)
-#  define VECMAT_MD_ABI_SUFFIX 64
-#elif defined(VECMAT_ABI_BITS) && (VECMAT_ABI_BITS == 32)
-#  define VECMAT_MD_ABI_SUFFIX 32
-#elif defined(VECMAT_USE_F64)
-#  define VECMAT_MD_ABI_SUFFIX 64
-#else
-#  define VECMAT_MD_ABI_SUFFIX 32
-#endif
-
-#if VECMAT_MD_ABI_SUFFIX == 64
-#  define vm_md_lj_tile vm_md_lj_tile64
-#  define vm_md_lj_list vm_md_lj_list64
-#  define vm_md_lj_list_excl vm_md_lj_list_excl64
-#  define vm_md_coulomb_tile vm_md_coulomb_tile64
-#  define vm_md_coulomb_list vm_md_coulomb_list64
-#  define vm_md_coulomb_list_excl vm_md_coulomb_list_excl64
-#  define vm_md_neighbors vm_md_neighbors64
-#  define vm_md_neighbors_scratch vm_md_neighbors_scratch64
-#  define vm_md_kinetic vm_md_kinetic64
-#else
-#  define vm_md_lj_tile vm_md_lj_tile32
-#  define vm_md_lj_list vm_md_lj_list32
-#  define vm_md_lj_list_excl vm_md_lj_list_excl32
-#  define vm_md_coulomb_tile vm_md_coulomb_tile32
-#  define vm_md_coulomb_list vm_md_coulomb_list32
-#  define vm_md_coulomb_list_excl vm_md_coulomb_list_excl32
-#  define vm_md_neighbors vm_md_neighbors32
-#  define vm_md_neighbors_scratch vm_md_neighbors_scratch32
-#  define vm_md_kinetic vm_md_kinetic32
-#endif
+#define vm_md_lj_tile VECMAT_SYMBOL(vm_md_lj_tile)
+#define vm_md_lj_list VECMAT_SYMBOL(vm_md_lj_list)
+#define vm_md_lj_list_excl VECMAT_SYMBOL(vm_md_lj_list_excl)
+#define vm_md_coulomb_tile VECMAT_SYMBOL(vm_md_coulomb_tile)
+#define vm_md_coulomb_list VECMAT_SYMBOL(vm_md_coulomb_list)
+#define vm_md_coulomb_list_excl VECMAT_SYMBOL(vm_md_coulomb_list_excl)
+#define vm_md_neighbors VECMAT_SYMBOL(vm_md_neighbors)
+#define vm_md_neighbors_scratch VECMAT_SYMBOL(vm_md_neighbors_scratch)
+#define vm_md_kinetic VECMAT_SYMBOL(vm_md_kinetic)
 
 /**
  * @brief Add one shifted-force Lennard-Jones tile.
